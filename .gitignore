@@ -1,0 +1,11 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+
+# Secrets - never commit a real JWT secret or database password
+.env
+.env.local
+*.env

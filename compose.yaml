@@ -1,0 +1,34 @@
+# Local MySQL for development.
+#   docker compose up -d
+#
+# The assignment prefers the database in Docker, and this keeps the connection
+# details identical to the defaults in application-dev.properties, so the backend
+# starts with no extra configuration.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: barberapp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: barberapp
+      MYSQL_USER: barberuser
+      MYSQL_PASSWORD: "12345"
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    volumes:
+      - barberapp-mysql-data:/var/lib/mysql
+    healthcheck:
+      # Flyway runs on startup, so the backend must not connect before MySQL is
+      # genuinely accepting queries rather than merely listening on the port.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  barberapp-mysql-data:
